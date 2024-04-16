@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Slide, useScrollTrigger, Button } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, Toolbar, Typography, Slide, useScrollTrigger, Button } from '@mui/material';
+//import MenuIcon from '@mui/icons-material/Menu';
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -18,9 +18,9 @@ export default function Navbar(props) {
     <HideOnScroll {...props}>
       <AppBar sx={{ bgcolor: 'black' }}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
+          {/* <IconButton edge="start" color="inherit" aria-label="menu">
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             CineGenie
           </Typography>
