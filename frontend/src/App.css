@@ -2,30 +2,69 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
+/* Since you requested a black background overall, we'll change the App-header background */
 .App-header {
-  background-color: #282c34;
+  background-color: black; /* Updated to black as requested */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  color: white; /* Ensuring text is visible against the black background */
+}
+
+/* Styling for the navigation bar if it's part of the App component */
+.App-navbar {
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
   color: white;
 }
 
+/* Styles for the movie carousel */
+.App-carousel {
+  margin: 2vh 0; /* Added some vertical spacing */
+}
+
+/* Cards used to display movies */
+.App-movie-card {
+  background-color: #333; /* Dark cards for movie items */
+  color: white; /* Text color for legibility */
+}
+
+/* Styling for the footer if it's part of the App component */
+.App-footer {
+  background-color: #212121; /* Slightly lighter black for the footer */
+  color: white;
+  padding: 3vh 0; /* Padding for aesthetic spacing */
+  font-size: calc(8px + 1vmin); /* Smaller font size for footer text */
+}
+
+/* Ensure links are visible against the black backgrounds */
 .App-link {
-  color: #61dafb;
+  color: #61dafb; /* No change here, assuming you want to keep this color */
+}
+
+/* If you are using buttons, you might want them to stand out */
+.App-button {
+  background-color: #61dafb; /* Using the link color for consistency */
+  color: black; /* Contrast text color */
+  border: none; /* Removing any default border */
+  padding: 1vh 2vw; /* Responsive padding */
+  margin: 1vh 0; /* Adding some margin for spacing */
+  border-radius: 5px; /* Rounded corners for aesthetics */
+  cursor: pointer; /* To indicate it's clickable */
+  transition: background-color 0.3s; /* Smooth background color transition on hover */
+}
+
+.App-button:hover {
+  background-color: #409ad5; /* Darker shade on hover for interaction feedback */
+}
+
+/* Keep the spin animation as is if you're still using it */
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
 @keyframes App-logo-spin {
