@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '../src/components/Home/Home'; // Example page component
 import Login from '../src/components/Login/Login'; // Example page component
+import Seating from '../src/components/SeatBooking/Seating'; // Example page component
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home/>} />
             <Route path="/login" element={<Login />} />
+            <Route path="/seating" element={<Seating />} />
           </Routes>
         </Box>
         <Footer />
