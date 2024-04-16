@@ -8,7 +8,8 @@ import Login from '../src/components/Login/Login';
 import Seating from '../src/components/SeatBooking/Seating'; 
 import BookingHistory from './components/BookingHistory/BookingHistory';
 
-
+import MovieDetail from './components/MovieDetail/MovieDetail';
+import SignupPage from './components/SignUp/SignUp';
 function App() {
   return (
     <Router>
@@ -21,6 +22,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/seating" element={<Seating />} />
             <Route path="/bookinghistory" element={<BookingHistory />} />
+            <Route path="/movie/:movieId" element={<MovieDetail />} />
+
+
+
+            <Route path="/sign-up" element={<SignupPage />} />
           </Routes>
         </Box>
         <Footer />
