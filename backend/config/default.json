@@ -1,0 +1,4 @@
+{
+    "secret": "mongodb+srv://bhagya:bhagya@cluster0.nfmjdbi.mongodb.net/",
+    "jwtSecret": "myjwtsecret"
+}
