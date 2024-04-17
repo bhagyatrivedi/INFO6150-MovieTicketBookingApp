@@ -85,7 +85,7 @@ const Seating = () => {
   const totalPrice = useMemo(() => {
     return Object.entries(selectedSeats).reduce((acc, [key, isSelected]) => {
       if (isSelected) {
-        const [section] = key.split('-'); // Extract the section name from the seatId
+        const [section] = key.split('-');
         return acc + sectionPricing[section];
       }
       return acc;
@@ -106,7 +106,7 @@ const Seating = () => {
       <Grid container key={`${category}-row-${rowIndex}`} justifyContent="center" spacing={2}>
         {includeSides && (
           <Grid item>
-            <SideSeat number="" booked={true} />  {/* Placeholder for gap */}
+            <SideSeat number="" booked={true} /> 
           </Grid>
         )}
         {row.map((seat, seatIndex) => (

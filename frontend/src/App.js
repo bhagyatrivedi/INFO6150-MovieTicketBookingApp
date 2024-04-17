@@ -8,7 +8,12 @@ import Login from '../src/components/Login/Login'; // Example page component
 import Seating from '../src/components/SeatBooking/Seating'; // Example page component
 import PaymentForm from './components/PaymentForm/PaymentForm';
 import Venue from './components/Venue/Venue';
-
+import BookingHistory from './components/BookingHistory/BookingHistory';
+import AddTheatre from './components/AddTheatre/AddTheatre';
+import PreferencesForm from './components/PreferencesForm/PreferencesForm';
+import MovieDetail from './components/MovieDetail/MovieDetail';
+import SignupPage from './components/SignUp/SignUp';
+import AddMovie from './components/AddMovie/AddMovie';
 function App() {
   return (
     <Router>
@@ -22,7 +27,12 @@ function App() {
             <Route path="/seating" element={<Seating />} />
             <Route path="/venue" element={<Venue/>} />
             <Route path="/paymentForm" element={<PaymentForm />} />
-
+            <Route path="/bookinghistory" element={<BookingHistory />} />
+            <Route path="/add-theatre" element={<AddTheatre/>} />
+            <Route path="/customer-preferences" element={<PreferencesForm />} />
+            <Route path="/movie/:movieId" element={<MovieDetail />} />
+            <Route path="/sign-up" element={<SignupPage />} />
+            <Route path="/add-movie-theatre-admin" element={<AddMovie></AddMovie>}/>
           </Routes>
         </Box>
         <Footer />
