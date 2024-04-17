@@ -15,6 +15,8 @@ import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 import MovieDetail from './components/MovieDetail/MovieDetail';
 import SignupPage from './components/SignUp/SignUp';
 import AddMovie from './components/AddMovie/AddMovie';
+import MoviesPage from './components/MoviesPage/MoviesPage';
+
 function App() {
   return (
     <Router>
@@ -30,6 +32,11 @@ function App() {
             <Route path="/paymentForm" element={<PaymentForm />} />
             <Route path="/bookinghistory" element={<BookingHistory />} />
             <Route path="/add-theatre" element={<AddTheatre/>} />
+            <Route path="/customer-preferences" element={<PreferencesForm />} />
+            <Route path="/movie/:movieId" element={<MovieDetail />} />
+            <Route path="/sign-up" element={<SignupPage />} />
+            <Route path="/add-movie-theatre-admin" element={<AddMovie></AddMovie>}/>
+            <Route path="/movies" element={<MoviesPage />} />
           </Routes>
         </Box>
         <Footer />

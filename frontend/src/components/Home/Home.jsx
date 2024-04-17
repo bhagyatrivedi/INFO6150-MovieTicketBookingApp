@@ -21,7 +21,6 @@ import m12 from '../../img/Wood.png';
 
 import jumbotronImage from '../../img/jumbotron-img.png';
 
-// Assume m11, jumbotronImage and other images are imported
 
 function Home() {
   const featuredMovies = [
@@ -35,9 +34,7 @@ function Home() {
     { image: m8, title: 'Dune', description: 'Some description.', rating: '9.0/10 - 30.1K Votes' },
   ];
 
-  // Other movies and features can be displayed similarly, here's the format for 'Opening This Week'
   const openingThisWeekMovies = [
-    // ... populate with 'Opening This Week' movies
     { image: m9, title: 'Oppenheimer', description: 'Some description.', rating: '8.3/10 - 30.1K Votes' },
     { image: m10, title: 'Barbie', description: 'Some description.', rating: '9.0/10 - 30.1K Votes' },
     { image: m11, title: 'US', description: 'Some description.', rating: '9.7/10 - 30.1K Votes' },
@@ -46,6 +43,7 @@ function Home() {
 
   return (
     <Box sx={{ bgcolor: 'black', color: 'white' }}>
+
       {/* Navbar placeholder */}
       <AppBar position="static" color="transparent">
         <Toolbar>
@@ -67,7 +65,7 @@ function Home() {
         <CardMedia component="img" image={jumbotronImage} alt="Featured Movie" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         {/* Overlayed text and buttons */}
         <Box sx={{ position: 'absolute', p: 4, color: 'white' }}>
-          <Typography variant="h3">Featured Movie Title</Typography>
+          <Typography variant="h3">Welcome to CineGenie</Typography>
           <Button variant="contained">Book Now</Button>
         </Box>
       </Card>
