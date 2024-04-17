@@ -10,6 +10,7 @@ import PaymentForm from './components/PaymentForm/PaymentForm';
 import Venue from './components/Venue/Venue';
 import BookingHistory from './components/BookingHistory/BookingHistory';
 import AddTheatre from './components/AddTheatre/AddTheatre';
+import TheatreList from './components/TheatreList/TheatreList';
 import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 import MovieDetail from './components/MovieDetail/MovieDetail';
 import SignupPage from './components/SignUp/SignUp';
@@ -29,10 +30,6 @@ function App() {
             <Route path="/paymentForm" element={<PaymentForm />} />
             <Route path="/bookinghistory" element={<BookingHistory />} />
             <Route path="/add-theatre" element={<AddTheatre/>} />
-            <Route path="/customer-preferences" element={<PreferencesForm />} />
-            <Route path="/movie/:movieId" element={<MovieDetail />} />
-            <Route path="/sign-up" element={<SignupPage />} />
-            <Route path="/add-movie-theatre-admin" element={<AddMovie></AddMovie>}/>
           </Routes>
         </Box>
         <Footer />
