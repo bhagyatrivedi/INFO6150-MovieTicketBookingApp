@@ -12,6 +12,7 @@ import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 
 import MovieDetail from './components/MovieDetail/MovieDetail';
 import SignupPage from './components/SignUp/SignUp';
+import AddMovie from './components/AddMovie/AddMovie';
 function App() {
   return (
     <Router>
@@ -27,6 +28,7 @@ function App() {
             <Route path="/customer-preferences" element={<PreferencesForm />} />
             <Route path="/movie/:movieId" element={<MovieDetail />} />
             <Route path="/sign-up" element={<SignupPage />} />
+            <Route path="/add-movie-theatre-admin" element={<AddMovie></AddMovie>}/>
           </Routes>
         </Box>
         <Footer />
