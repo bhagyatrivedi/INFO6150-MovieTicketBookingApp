@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
-import { Box, Button, Card, CardContent, TextField, Typography, Grid, MenuItem } from '@mui/material';
+import { Box, Button, Card, CardContent, TextField, Typography, Grid, MenuItem, Alert } from '@mui/material';
+
 
 const AddTheatre = () => {
-  const [theatre, setTheatre] = useState({
+  const initialState = {
     name: '',
     company: '',
     street: '',
     city: '',
     state: '',
     zip: ''
-  });
-
+  };
+  const [theatre, setTheatre] = useState(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [pincodeError, setPincodeError] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     if (name === 'zip' && !/^\d*$/.test(value)) {
-      // If the value is not a number, ignore it
       return;
     }
     if (name === 'zip' && value.length > 6) {
-      // Limit the length of the zip code to 6 digits
       return;
     }
     if (name === 'zip' && value.length === 6) {
-      setPincodeError(false); // Clear pincode error if the entered pincode length is 6
+      setPincodeError(false);
     }
     setTheatre(prevState => ({
       ...prevState,
@@ -32,10 +34,33 @@ const AddTheatre = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Submitting theatre data:', theatre);
-    // Here you would handle the API request to add the theatre to the database
+    setIsSubmitting(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const response = await fetch('http://localhost:3000/theatres/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(theatre),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add theatre');
+      }
+
+      setSuccessMessage('Theatre added successfully!');
+      setTheatre(initialState); // Reset the form fields after successful submission
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,6 +70,8 @@ const AddTheatre = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             Add New Theatre
           </Typography>
+          {error && <Alert severity="error">{error}</Alert>}
+          {successMessage && <Alert severity="success">{successMessage}</Alert>}
           <form onSubmit={handleSubmit}>
             <TextField
               label="Theatre Name"
@@ -133,7 +160,6 @@ const AddTheatre = () => {
   );
 };
 
-// List of US states
 const states = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
   'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
