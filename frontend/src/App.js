@@ -4,11 +4,17 @@ import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from '../src/components/Home/Home'; // Example page component
-import Login from '../src/components/Login/Login'; // Example page component
+import Login from '../src/components/Login/Login';
+import Seating from '../src/components/SeatBooking/Seating'; 
 import BookingHistory from './components/BookingHistory/BookingHistory';
 import AddTheatre from './components/AddTheatre/AddTheatre';
 import TheatreList from './components/TheatreList/TheatreList';
+import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 
+
+import MovieDetail from './components/MovieDetail/MovieDetail';
+import SignupPage from './components/SignUp/SignUp';
+import AddMovie from './components/AddMovie/AddMovie';
 function App() {
   return (
     <Router>
@@ -16,12 +22,12 @@ function App() {
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
         <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
-          <Routes>
-            <Route path="/" element={<Home/>} />
+           <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/seating" element={<Seating />} />
             <Route path="/bookinghistory" element={<BookingHistory />} />
             <Route path="/add-theatre" element={<AddTheatre/>} />
-            <Route path="/list-theatre" element={<TheatreList/>} />
           </Routes>
         </Box>
         <Footer />
