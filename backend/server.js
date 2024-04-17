@@ -15,7 +15,7 @@ app.use(cors());
 
 app.use('/images', express.static('images'));
 
-// app.use('/', require('./api/routes/user'))
+app.use('/', require('./Routes/userRoutes'))
 const port = 3000;
 app.listen(port, () => {
     console.log(`[INFO] - server running on port ${port}`)
