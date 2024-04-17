@@ -10,7 +10,8 @@ import BookingHistory from './components/BookingHistory/BookingHistory';
 import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 
 
-
+import MovieDetail from './components/MovieDetail/MovieDetail';
+import SignupPage from './components/SignUp/SignUp';
 function App() {
   return (
     <Router>
@@ -24,6 +25,8 @@ function App() {
             <Route path="/seating" element={<Seating />} />
             <Route path="/bookinghistory" element={<BookingHistory />} />
             <Route path="/customer-preferences" element={<PreferencesForm />} />
+            <Route path="/movie/:movieId" element={<MovieDetail />} />
+            <Route path="/sign-up" element={<SignupPage />} />
           </Routes>
         </Box>
         <Footer />
