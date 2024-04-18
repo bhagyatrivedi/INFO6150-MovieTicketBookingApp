@@ -1,29 +1,33 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const Movie = require('../Models/Movie');
 const jwtAuth = require('../middleware/auth');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3'); // Correct import
+const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'images/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); 
+// Initialize S3 client with AWS SDK v3
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
-const upload = multer({ storage: storage });
+// Multer configuration for parsing multipart/form-data
+const upload = multer({
+  storage: multer.memoryStorage(), // Store files in memory
+  limits: { fileSize: 5 * 1024 * 1024 }, // Example: limit file size to 5MB
+});
 
-router.post('/add-movie', upload.single('poster'), jwtAuth(['admin']),async (req, res) => {
+router.post('/add-movie', jwtAuth(['admin']), upload.single('poster'), async (req, res) => {
   const { title, rating, genre, synopsis, cast, category } = req.body;
-  const showtimesString = req.body.showtimes; // You may need to ensure this is being sent as a JSON string
-
+  const showtimesString = req.body.showtimes;
   let showtimes;
+
   try {
-    showtimes = JSON.parse(showtimesString); // Parsing the JSON string
+    showtimes = JSON.parse(showtimesString);
     showtimes.forEach(st => {
       if (!st.theatre || !st.datetime) {
         throw new Error("Each showtime must include a theatre and datetime.");
@@ -34,14 +38,27 @@ router.post('/add-movie', upload.single('poster'), jwtAuth(['admin']),async (req
     return res.status(400).json({ message: "Invalid showtimes format" });
   }
 
-  const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '';
+  let imageUrl = null;
+  if (req.file) {
+    const uploadParams = {
+      Bucket: 'movie-app-info6150',
+      Key: `uploads/poster-${Date.now()}-${path.basename(req.file.originalname)}`,
+      Body: req.file.buffer,
+    };
+
+    try {
+      await s3Client.send(new PutObjectCommand(uploadParams));
+      imageUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`;
+    } catch (uploadError) {
+      console.error('Error uploading file to S3:', uploadError);
+      return res.status(500).json({ message: "Failed to upload image to S3" });
+    }
+  }
   if (!imageUrl) {
     return res.status(400).json({ message: "Poster image is required" });
   }
 
-  const movieData = {
-    title, rating, genre, synopsis, cast, showtimes, imageUrl, category
-  };
+  const movieData = { title, rating, genre, synopsis, cast, showtimes, imageUrl, category };
 
   try {
     const movie = new Movie(movieData);

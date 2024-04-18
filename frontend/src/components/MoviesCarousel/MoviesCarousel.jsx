@@ -56,28 +56,33 @@ const MovieCarousel = ({ category }) => {
           }
         }}
       >
-        {movies.map((movie) => (
-          <Card 
-            key={movie._id} 
-            sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'transparent' }}
-            onClick={() => handleMovieClick(movie._id)}
-          >
-            <CardMedia
-              component="img"
-              image={movie.imageUrl}
-              alt={movie.title}
-              sx={{ height: 450, maxWidth: '100%', objectFit: 'contain', marginBottom: 10 }}
-            />
-            <CardContent sx={{ position: 'absolute', bottom: 0, color: 'white', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-              <Typography gutterBottom variant="h5" component="div">
-                {movie.title}
-              </Typography>
-              <Typography variant="body2">
-                {movie.synopsis}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
+        {movies.map((movie) => {
+          // Log the imageUrl of each movie
+          console.log("Image URL for movie", movie.title, "is", movie.imageUrl);
+
+          return (
+            <Card 
+              key={movie._id} 
+              sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'transparent' }}
+              onClick={() => handleMovieClick(movie._id)}
+            >
+              <CardMedia
+                component="img"
+                image={movie.imageUrl}
+                alt={movie.title}
+                sx={{ height: 450, maxWidth: '100%', objectFit: 'contain', marginBottom: 10 }}
+              />
+              <CardContent sx={{ position: 'absolute', bottom: 0, color: 'white', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                <Typography gutterBottom variant="h5" component="div">
+                  {movie.title}
+                </Typography>
+                <Typography variant="body2">
+                  {movie.synopsis}
+                </Typography>
+              </CardContent>
+            </Card>
+          );
+        })}
       </Carousel>
     </Box>
   );
