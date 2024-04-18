@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import {
   Box, Button, Card, CardContent, TextField, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Alert, IconButton
 } from '@mui/material';
@@ -45,7 +45,8 @@ const AddMovie = () => {
 
     return showtimes;
   };
-  const [predefinedShowtimes] = useState(generatePredefinedShowtimes()); // Removed setPredefinedShowtimes
+
+  const [predefinedShowtimes] = useState(generatePredefinedShowtimes());
   const [movie, setMovie] = useState({
     title: '',
     rating: '',
@@ -55,11 +56,12 @@ const AddMovie = () => {
     category: '',
     poster: null,
     theater: '',
-    showtimes: [],
+    showtimes: []
   });
   const [theatres, setTheatres] = useState([]);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchTheatres = async () => {
@@ -76,14 +78,12 @@ const AddMovie = () => {
         setError('Failed to fetch theatres');
       }
     };
-  
+
     fetchTheatres();
   }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name);
-    console.log(value);
     setMovie(prevState => ({
       ...prevState,
       [name]: value,
@@ -97,32 +97,12 @@ const AddMovie = () => {
     }));
   };
 
-  const addShowtime = () => {
-    setMovie(prevMovie => ({
-      ...prevMovie,
-      showtimes: [...prevMovie.showtimes, { theatre: '', datetime: new Date() }],
-    }));
-  };
-
   const handleAddPredefinedShowtime = (predefinedShowtime) => {
-    if (!movie.theater) {
-      setError('Please select a theater before adding a showtime.');
-      return;
-    }
-  
-    const selectedTheatreObject = theatres.find(theatre => theatre._id === movie.theater);
-    console.log(theatres.find(theatre => theatre._id === movie.theater));
-    if (!selectedTheatreObject) {
-      setError('Selected theater does not exist.');
-      return;
-    }
-  
     const newShowtime = {
-      theatre: selectedTheatreObject._id,
+      theatre: movie.theater,
       datetime: predefinedShowtime.datetime,
       id: Date.now(),
     };
-  
     setMovie(prevMovie => ({
       ...prevMovie,
       showtimes: [...prevMovie.showtimes, newShowtime],
@@ -136,12 +116,16 @@ const AddMovie = () => {
     }));
   };
 
+  const addShowtime = () => {
+    setMovie(prevMovie => ({
+      ...prevMovie,
+      showtimes: [...prevMovie.showtimes, { theatre: '', datetime: new Date() }],
+    }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    // Retrieve the JWT token from localStorage
-  const token = localStorage.getItem('token');
-
+    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('title', movie.title);
     formData.append('rating', movie.rating);
@@ -153,21 +137,34 @@ const AddMovie = () => {
     if (movie.poster) {
       formData.append('poster', movie.poster);
     }
-  
-   try {
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/movies/add-movie`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`, // Include the token in the request headers
-      },
-    });
-    setSuccessMessage('Movie added successfully!');
-    console.log('Response:', response);
-  } catch (error) {
-    console.error('Failed to add movie:', error);
-    setError('Failed to add movie');
-  }
-};
+
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/movies/add-movie`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setSuccessMessage('Movie added successfully!');
+      console.log('Response:', response);
+      // Reset all states
+      setMovie({
+        title: '',
+        rating: '',
+        genre: '',
+        synopsis: '',
+        cast: '',
+        category: '',
+        poster: null,
+        theater: '',
+        showtimes: []
+      });
+      fileInputRef.current.value = ""; // Reset file input
+    } catch (error) {
+      console.error('Failed to add movie:', error);
+      setError('Failed to add movie');
+    }
+  };
 
 
   return (
@@ -336,12 +333,13 @@ const AddMovie = () => {
                 Upload Poster
               </Typography>
               <input
-                accept="image/*"
-                type="file"
-                onChange={handleFileChange}
-                required
-                style={{ display: 'block', marginBottom: 16, color: '#ffcc80' }}
-              />
+      ref={fileInputRef}
+      accept="image/*"
+      type="file"
+      onChange={handleFileChange}
+      required
+      style={{ display: 'block', marginBottom: 16, color: '#ffcc80' }}
+    />
               {movie.poster && (
                 <Box
                   component="img"
