@@ -65,7 +65,7 @@ const AddMovie = () => {
     const fetchTheatres = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:3000/theatres/', {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/theatres/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
