@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const Movie = require('../Models/Movie');
-
+const jwtAuth = require('../middleware/auth');
 const router = express.Router();
 
 
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/add-movie', upload.single('poster'), async (req, res) => {
+router.post('/add-movie', upload.single('poster'), jwtAuth(['admin']),async (req, res) => {
   const { title, rating, genre, synopsis, cast, category } = req.body;
   const showtimesString = req.body.showtimes; // You may need to ensure this is being sent as a JSON string
 
@@ -55,7 +55,7 @@ router.post('/add-movie', upload.single('poster'), async (req, res) => {
 
 
 
-router.get('/:category', async (req, res) => {
+router.get('/:category', jwtAuth(['customer', 'admin', 'theatre admin']),async (req, res) => {
   try {
     const movies = await Movie.find({ category: req.params.category });
     res.json(movies);
@@ -63,7 +63,7 @@ router.get('/:category', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.get('/', async (req, res) => {
+router.get('/', jwtAuth(['customer', 'admin', 'theatre admin']),async (req, res) => {
   try {
     // .populate() will replace 'theatre' ObjectId with actual 'Theatre' document
     const movies = await Movie.find().populate('showtimes.theatre');
@@ -74,7 +74,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/movie/:id', async (req, res) => {
+router.get('/movie/:id', jwtAuth(['customer', 'admin', 'theatre admin']), async (req, res) => {
   try {
     console.log("In API")
     const movie = await Movie.findById(req.params.id).populate('showtimes.theatre');

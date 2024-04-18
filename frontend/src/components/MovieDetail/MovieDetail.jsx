@@ -1,26 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, Typography, Chip, Box, CardMedia } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import axios from 'axios';
 
 const MovieDetail = () => {
   const { movieId } = useParams();
-  const [movie, setMovie] = useState({ title: '', rating: '', genre: '', synopsis: '', cast: '', showtimes: [], imageUrl: '' });
+  const navigate = useNavigate();
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchMovie = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/movie/${movieId}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/movie/${movieId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setMovie(response.data); // Assuming response.data contains the movie object
       } catch (error) {
         console.error('Failed to fetch movie details:', error);
+        if (error.response && error.response.status === 401) {
+          navigate('/login'); // Redirect to login if unauthorized
+        } else {
+          setError('Failed to load movie details.');
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMovie();
-  }, [movieId]);
+  }, [movieId, navigate]);
 
+  if (loading) return <Typography>Loading movie details...</Typography>;
+  if (error) return <Typography color="error">{error}</Typography>;
   if (!movie) return <Typography>No movie found.</Typography>;
 
   const headerFooterHeight = '64px'; // Assume header and footer are each 64px

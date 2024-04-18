@@ -2,27 +2,39 @@ import React, { useEffect, useState } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const MovieCarousel = ({ category }) => {
   const [movies, setMovies] = useState([]);
-  const navigate = useNavigate(); // Use the useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/${category}`);
+        // Retrieve the JWT token from localStorage
+        const token = localStorage.getItem('token');
+        
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/${category}`, {
+          headers: {
+            // Include the JWT token in the Authorization header
+            Authorization: `Bearer ${token}`
+          }
+        });
         setMovies(response.data);
       } catch (error) {
         console.error('Failed to fetch movies:', error);
+        // Navigate to login if a 401 Unauthorized error occurred
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+        }
       }
     };
 
     fetchMovies();
-  }, [category]);
+  }, [category, navigate]);
 
   const handleMovieClick = (movieId) => {
-    navigate(`/movie/${movieId}`); // Navigate to MovieDetail with the movie's ID
+    navigate(`/movie/${movieId}`);
   };
   
   return (
@@ -48,7 +60,7 @@ const MovieCarousel = ({ category }) => {
           <Card 
             key={movie._id} 
             sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'transparent' }}
-            onClick={() => handleMovieClick(movie._id)} // Add onClick event handler
+            onClick={() => handleMovieClick(movie._id)}
           >
             <CardMedia
               component="img"

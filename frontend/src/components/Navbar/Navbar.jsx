@@ -31,9 +31,30 @@ export default function Navbar(props) {
             CineGenie
           </Typography>
           <Button color="inherit" onClick={() => navigate('/')}>Home</Button>
+          
+          {/* Common Link for authenticated users
+          {user && (
+            <Button color="inherit" onClick={() => navigate('/bookinghistory')}>My Bookings</Button>
+          )} */}
+
+          {/* Customer-specific Links */}
           {user && user.type === 'customer' && (
             <Button color="inherit" onClick={() => navigate('/movies')}>Movies</Button>
           )}
+
+          {/* Admin-specific Links */}
+          {user && user.type === 'admin' && (
+            <>
+              <Button color="inherit" onClick={() => navigate('/add-movie')}>Add Movie</Button>
+              <Button color="inherit" onClick={() => navigate('/movies')}>Manage Movies</Button>
+            </>
+          )}
+
+          {/* Theatre Admin-specific Links */}
+          {user && user.type === 'theatre admin' && (
+            <Button color="inherit" onClick={() => navigate('/add-theatre')}>Add Theatre</Button>
+          )}
+
           {user ? (
             <>
               <Typography variant="subtitle1" sx={{ marginRight: 2 }}>

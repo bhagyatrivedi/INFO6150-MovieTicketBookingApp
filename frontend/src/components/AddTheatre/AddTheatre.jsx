@@ -37,27 +37,33 @@ const AddTheatre = () => {
     event.preventDefault();
     setError('');
     setSuccessMessage('');
-
+  
+    // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem('token');
+  
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/theatres/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Include the JWT token in the Authorization header
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(theatre),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to add theatre');
       }
-
+  
       setSuccessMessage('Theatre added successfully!');
       setTheatre(initialState); // Reset the form fields after successful submission
     } catch (error) {
       setError(error.message);
     }
   };
+  
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>

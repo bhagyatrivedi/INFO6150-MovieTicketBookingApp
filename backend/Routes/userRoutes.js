@@ -24,7 +24,7 @@ router.post('/user/create',
     check('fullName', 'Please enter your full name!').not().isEmpty(),
     check('email', 'Please enter a valid northeastern email ID!').isEmail(),
     check('password', 'Please a valid strong password. Requirements -  1 Upper Case Letter, 1 special Character, 1 number and 8 or more characters!').isStrongPassword(),
-    check('type', 'Type must be either customer or admin').isIn(['customer', 'admin']),
+    check('type', 'Type must be either customer, admin, or theatre admin').isIn(['customer', 'admin', 'theatre admin']),
 ],
 async (req, res) => {
     const errors = validationResult(req);
@@ -175,7 +175,7 @@ router.put(
       }
     }
   );
-  router.post('/updatePreferences', jwtAuth(), async (req, res) => {
+  router.post('/updatePreferences', jwtAuth(['customer']), async (req, res) => {
     try {
         const userId = req.user.id; // Assuming your auth middleware attaches the user id to req.user
         const { favoriteGenres, favoriteActors, favoriteDirectors, preferredLanguages } = req.body;
@@ -231,7 +231,7 @@ router.put(
     }
   );
 
-  router.get('/user/getAll', jwtAuth(true), async (req, res) => {
+  router.get('/user/getAll', jwtAuth(['admin']), async (req, res) => {
     try {
         const users = await User.find({}).select('-password');
 

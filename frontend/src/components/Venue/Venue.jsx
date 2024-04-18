@@ -11,7 +11,19 @@ const MovieFilters = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/`);
+        // Retrieve the JWT token from localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setSnackbar({ open: true, message: 'You are not authorized. Please log in.' });
+          navigate('/login'); // Redirect to login page if token is not available
+          return;
+        }
+  
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/`, {
+          headers: {
+            'Authorization': `Bearer ${token}` // Include the JWT token in the request headers
+          }
+        });
         setMovies(response.data);
       } catch (error) {
         console.error('Failed to fetch movies:', error);
@@ -19,8 +31,7 @@ const MovieFilters = () => {
       }
     };
     fetchMovies();
-  }, []);
-
+  }, [navigate]);
   const handleBookNow = (movie, selectedShowtime) => {
     if (movie.showtimes && movie.showtimes.length > 0) {
       const theatre = movie.showtimes.find(showtime => showtime.datetime === selectedShowtime).theatre;

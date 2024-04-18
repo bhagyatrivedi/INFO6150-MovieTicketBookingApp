@@ -1,10 +1,11 @@
 const express = require('express');
 const Theatre = require('../Models/Theatre');
+const jwtAuth = require('../middleware/auth');
 
 const router = express.Router();
 
 // POST route to add a new theatre
-router.post('/', async (req, res) => {
+router.post('/', jwtAuth(['theatre admin']),async (req, res) => {
   const theatre = new Theatre({
     ...req.body
   });
@@ -19,7 +20,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET route to fetch all theatres
-router.get('/', async (req, res) => {
+router.get('/', jwtAuth(['customer', 'theatre admin', 'admin']),async (req, res) => {
   try {
     const theatres = await Theatre.find();
     res.json(theatres);

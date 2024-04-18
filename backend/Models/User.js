@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
     type: { 
         type: String,
         required: true,
-        enum: ['customer', 'admin'] 
+        enum: ['customer', 'admin', 'theatre admin'] // Added 'theatre admin' here
     },
     favoriteGenres: {
         type: [String], 

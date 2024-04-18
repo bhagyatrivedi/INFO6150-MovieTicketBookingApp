@@ -133,6 +133,7 @@ const SignupPage = () => {
                 >
                   <MenuItem value="customer">Customer</MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="theatre admin">Theatre Admin</MenuItem>
                 </Select>
               </FormControl>
               <Button

@@ -62,17 +62,23 @@ const AddMovie = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3000/theatres/')
-      .then(response => {
+    const fetchTheatres = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/theatres/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setTheatres(response.data);
-        console.log("Theatres = ")
-        console.log(theatres);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Failed to fetch theatres:', error);
         setError('Failed to fetch theatres');
-      });
-  }, [theatres]); // Added theatres to the dependency array
+      }
+    };
+  
+    fetchTheatres();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -133,6 +139,9 @@ const AddMovie = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
+    // Retrieve the JWT token from localStorage
+  const token = localStorage.getItem('token');
+
     const formData = new FormData();
     formData.append('title', movie.title);
     formData.append('rating', movie.rating);
@@ -145,19 +154,20 @@ const AddMovie = () => {
       formData.append('poster', movie.poster);
     }
   
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/movies/add-movie`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setSuccessMessage('Movie added successfully!');
-      console.log('Response:', response);
-    } catch (error) {
-      console.error('Failed to add movie:', error);
-      setError('Failed to add movie');
-    }
-  };
+   try {
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/movies/add-movie`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`, // Include the token in the request headers
+      },
+    });
+    setSuccessMessage('Movie added successfully!');
+    console.log('Response:', response);
+  } catch (error) {
+    console.error('Failed to add movie:', error);
+    setError('Failed to add movie');
+  }
+};
 
 
   return (

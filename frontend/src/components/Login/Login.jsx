@@ -1,16 +1,15 @@
 import React, { useState, useContext } from 'react';
-import { Button, TextField, Box, Typography, Container, Grid, Link, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Button, TextField, Box, Typography, Container, Alert } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link here
 import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const handleUsernameChange = (event) => setUsername(event.target.value);
   const handlePasswordChange = (event) => setPassword(event.target.value);
@@ -18,7 +17,6 @@ export default function Login() {
   const handleLogin = async (event) => {
     event.preventDefault();
     setError('');
-    setLoginSuccess(false);
 
     if (!username || !password) {
       setError('Please fill in all fields');
@@ -44,11 +42,23 @@ export default function Login() {
       }
 
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', data.type);
       localStorage.setItem('user', JSON.stringify(data.user));
       login(data.user, data.token);
-      setLoginSuccess(true);
-      navigate('/customer-preferences');
+
+      // Navigate based on the user type
+      switch (data.user.type) {
+        case 'customer':
+          navigate('/customer-preferences');
+          break;
+        case 'admin':
+          navigate('/add-movie');
+          break;
+        case 'theatre admin':
+          navigate('/add-theatre');
+          break;
+        default:
+          navigate('/'); // Navigate to home page or any other page as default
+      }
     } catch (error) {
       console.log(error.message);
       setError(error.message);
@@ -90,7 +100,6 @@ export default function Login() {
           </Typography>
           <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
-            {loginSuccess && <Alert severity="success">Logged in successfully!</Alert>}
             <TextField
               margin="normal"
               required
@@ -123,18 +132,9 @@ export default function Login() {
             >
               Login
             </Button>
-            <Grid container>
-              {/* <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid> */}
-              <Grid item>
-                <Link href="/sign-up" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+            <Link href="/sign-up" variant="body2" sx={{ cursor: 'pointer', display: 'block', textAlign: 'right' }}>
+              {"Don't have an account? Sign Up"}
+            </Link>
           </Box>
         </Box>
       </Container>
