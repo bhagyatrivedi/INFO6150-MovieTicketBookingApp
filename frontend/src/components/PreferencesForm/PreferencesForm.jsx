@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
-import { Box, Typography, Chip, Stack, Divider } from '@mui/material';
-
+import {
+  Box,
+  Typography,
+  Chip,
+  Stack,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 const genres = ['Action', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller', 'Sci-Fi'];
 const actors = ['Leonardo DiCaprio', 'Jennifer Lawrence', 'Denzel Washington', 'Meryl Streep'];
 const directors = ['Christopher Nolan', 'Quentin Tarantino', 'Greta Gerwig', 'Bong Joon Ho'];
 const languages = ['English', 'Spanish', 'French', 'Mandarin'];
 
 const PreferencesForm = () => {
+  const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedActors, setSelectedActors] = useState([]);
   const [selectedDirectors, setSelectedDirectors] = useState([]);
@@ -23,6 +37,10 @@ const PreferencesForm = () => {
     setList(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
   };
 
+  const handleClose = () => {
+    setOpenDialog(false);
+    navigate('/venue'); // Navigate to venue page after closing the dialog
+  };
   const selectionColor = {
     genres: '#E57373',
     actors: '#FFA726',
@@ -30,14 +48,34 @@ const PreferencesForm = () => {
     languages: '#4FC3F7',
   };
 
-  const handleSubmit = () => {
-    console.log({
-      favoriteGenres: selectedGenres,
-      favoriteActors: selectedActors,
-      favoriteDirectors: selectedDirectors,
-      preferredLanguages: selectedLanguages,
-    });
-  };
+  const handleSubmit = async () => {
+    try {
+        const authToken = localStorage.getItem('token');
+        const response = await fetch('http://localhost:3000/updatePreferences', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+                favoriteGenres: selectedGenres,
+                favoriteActors: selectedActors,
+                favoriteDirectors: selectedDirectors,
+                preferredLanguages: selectedLanguages,
+            })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Could not update preferences');
+        }
+        console.log('Preferences updated successfully!', data);
+        setOpenDialog(true);
+    } catch (error) {
+        console.error('Error updating preferences:', error.message);
+        // Handle error (e.g., show an error message)
+    }
+};
 
   return (
     <Box sx={{ padding: 5, bgcolor: '#fff', borderRadius: 1 }}>
@@ -78,7 +116,7 @@ const PreferencesForm = () => {
         </Box>
       ))}
 
-      <Box textAlign="center" sx={{ mt: 4 }}>
+<Box textAlign="center" sx={{ mt: 4 }}>
         <Chip
           label="Save Preferences"
           onClick={handleSubmit}
@@ -91,6 +129,26 @@ const PreferencesForm = () => {
           }}
         />
       </Box>
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Preferences Saved Successfully!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Your preferences have been saved. You will now be redirected to the venue page.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

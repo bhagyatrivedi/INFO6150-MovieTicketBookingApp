@@ -1,108 +1,101 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Alert } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import TicketPDFGenerator from './TicketPDFGenerator'; // Adjust the import path as necessary
+
+const stripePromise = loadStripe('pk_test_51P6lsIJrAU2yeKrxYoghGQ1AY2kvd9nNQWAXJvS9ksAJWadrU1YkfLHkqpIRU6fGXZe7jL5XbAAdBPuiVsIH5hHH00HITDr0B2');
+
+// Mock function to simulate payment process. Replace with your server-side function
+const mockPaymentProcess = async (paymentMethodId) => {
+    console.log('Processing payment with payment method:', paymentMethodId);
+    // Simulate a delay for processing payment
+    return new Promise(resolve => setTimeout(() => resolve({ success: true }), 2000));
+};
 
 const PaymentForm = () => {
-    const [cardDetails, setCardDetails] = useState({
-        cardNumber: '',
-        expiryDate: '',
-        cvv: '',
-        cardHolderName: '',
-    });
-    const [errors, setErrors] = useState({});
+    const location = useLocation();
+    const { theater, movieTitle, selectedSeats, totalPrice, showtime } = location.state || {};
+    const stripe = useStripe();
+    const elements = useElements();
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-    const validate = () => {
-        let tempErrors = {};
-        tempErrors.cardNumber = cardDetails.cardNumber ? "" : "Card number is required";
-        tempErrors.expiryDate = cardDetails.expiryDate ? "" : "Expiry date is required";
-        tempErrors.cvv = cardDetails.cvv ? "" : "CVV is required";
-        tempErrors.cardHolderName = cardDetails.cardHolderName ? "" : "Card holder name is required";
-
-        // Additional validations can be added here (e.g., format of card number, CVV length)
-        if (cardDetails.cardNumber && !/^\d{16}$/.test(cardDetails.cardNumber)) {
-            tempErrors.cardNumber = "Card number must be 16 digits";
-        }
-        if (cardDetails.expiryDate && !/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(cardDetails.expiryDate)) {
-            tempErrors.expiryDate = "Expiry date must be in MM/YY format";
-        }
-        if (cardDetails.cvv && !/^\d{3}$/.test(cardDetails.cvv)) {
-            tempErrors.cvv = "CVV must be 3 digits";
-        }
-
-        setErrors(tempErrors);
-        return Object.values(tempErrors).every(x => x === "");
-    };
-
-    const handleChange = (e) => {
-        setCardDetails({ ...cardDetails, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (validate()) {
-            console.log("Submitting card details:", cardDetails);  // Log the card details for demo purposes
-            alert("Payment submitted successfully!");  // Simulate a successful payment
+    const cardStyle = {
+        style: {
+            base: {
+                color: "#32325d",
+                fontFamily: 'Arial, sans-serif',
+                fontSmoothing: "antialiased",
+                fontSize: "16px",
+                "::placeholder": {
+                    color: "#aab7c4"
+                }
+            },
+            invalid: {
+                color: "#fa755a",
+                iconColor: "#fa755a"
+            }
         }
     };
+
+    const handlePayment = async () => {
+        if (!stripe || !elements) {
+            console.log('Stripe.js has not loaded yet.');
+            return;
+        }
+
+        const cardElement = elements.getElement(CardElement);
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
+        });
+
+        if (error) {
+            console.log('[error]', error);
+        } else {
+            // Simulate payment process or integrate with your backend
+            const paymentResult = await mockPaymentProcess(paymentMethod.id);
+            if (paymentResult.success) {
+                setPaymentSuccess(true); // Update state to indicate payment success
+            } else {
+                alert('Payment failed. Please try again.');
+            }
+        }
+    };
+
 
     return (
-        <Box sx={{ maxWidth: 400, m: 'auto', p: 4, textAlign: 'center', pt: 6 }}>
-            <Typography variant="h5" gutterBottom>
-                Payment Gateway
-            </Typography>
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Card Number"
-                    variant="outlined"
-                    name="cardNumber"
-                    value={cardDetails.cardNumber}
-                    onChange={handleChange}
-                    error={!!errors.cardNumber}
-                    helperText={errors.cardNumber}
-                />
-                <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Expiry Date"
-                    variant="outlined"
-                    name="expiryDate"
-                    placeholder="MM/YY"
-                    value={cardDetails.expiryDate}
-                    onChange={handleChange}
-                    error={!!errors.expiryDate}
-                    helperText={errors.expiryDate}
-                />
-                <TextField
-                    fullWidth
-                    margin="normal"
-                    label="CVV"
-                    variant="outlined"
-                    name="cvv"
-                    type="password"
-                    value={cardDetails.cvv}
-                    onChange={handleChange}
-                    error={!!errors.cvv}
-                    helperText={errors.cvv}
-                />
-                <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Card Holder Name"
-                    variant="outlined"
-                    name="cardHolderName"
-                    value={cardDetails.cardHolderName}
-                    onChange={handleChange}
-                    error={!!errors.cardHolderName}
-                    helperText={errors.cardHolderName}
-                />
-                <Button type="submit" variant="contained" sx={{ mt: 2, width: '100%' }}>
-                    Pay Now
-                </Button>
-            </form>
+        <Box sx={{ maxWidth: 600, m: 'auto', p: 4, textAlign: 'center' }}>
+            <Typography variant="h5" gutterBottom>Payment Gateway</Typography>
+            {!paymentSuccess ? (
+                // Payment form and details
+                <>
+                    <Card sx={{ mb: 2 }}>
+                        {/* Your card content */}
+                    </Card>
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <CardElement options={cardStyle} />
+                        <Button variant="contained" onClick={handlePayment} disabled={!stripe} sx={{ mt: 2, width: '100%' }}>
+                            Confirm Payment
+                        </Button>
+                    </form>
+                </>
+            ) : (
+                // Display ticket PDF generator after successful payment
+                <TicketPDFGenerator ticketDetails={{ theater, movieTitle, selectedSeats, totalPrice, showtime }} />
+            )}
         </Box>
     );
 };
 
-export default PaymentForm;
 
+const StripePaymentForm = () => {
+    return (
+        <Elements stripe={stripePromise}>
+            <PaymentForm />
+        </Elements>
+    );
+};
+
+export default StripePaymentForm;

@@ -13,7 +13,7 @@ const User = require('../Models/User');
 const bcrypt = require('bcryptjs');
 
 const jwt = require('jsonwebtoken')
-
+// const auth = require('../middleware/auth');
 const config = require('config');
 const jwtAuth = require('../middleware/auth');
 
@@ -105,7 +105,15 @@ router.post('/user/login', async (req, res) => {
               { expiresIn: 360000 },
               (err, token) => {
                   if (err) throw err;
-                  res.json({ token, type: user.type }); // Send the token to the client
+                  res.json({
+                    token,
+                    user: {
+                      id: user.id,
+                      fullName: user.fullName,
+                      email: user.email,
+                      type: user.type,
+                    },
+                  }); // Send the token to the client
               }
           );
       }
@@ -167,7 +175,31 @@ router.put(
       }
     }
   );
+  router.post('/updatePreferences', jwtAuth(), async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming your auth middleware attaches the user id to req.user
+        const { favoriteGenres, favoriteActors, favoriteDirectors, preferredLanguages } = req.body;
 
+        // Find the user by id and update their preferences
+        const user = await User.findByIdAndUpdate(userId, {
+            $set: {
+                favoriteGenres,
+                favoriteActors,
+                favoriteDirectors,
+                preferredLanguages
+            }
+        }, { new: true }); // { new: true } returns the updated document
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        res.json(user); // Send back the updated user document
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
 
   router.delete(
     '/user/delete',

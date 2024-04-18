@@ -25,6 +25,18 @@ const UserSchema = new mongoose.Schema({
     favoriteGenres: {
         type: [String], 
         required: false 
+    },
+    favoriteActors: {
+        type: [String],
+        required: false
+    },
+    favoriteDirectors: {
+        type: [String],
+        required: false
+    },
+    preferredLanguages: {
+        type: [String],
+        required: false
     }
 });
 

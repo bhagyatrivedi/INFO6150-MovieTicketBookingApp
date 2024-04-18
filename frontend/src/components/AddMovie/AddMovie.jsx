@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import {
-  Box, Button, Card, CardContent, TextField, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Alert
+  Box, Button, Card, CardContent, TextField, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Alert, IconButton
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import axios from 'axios';
 
 const CustomTextField = styled(TextField)({
   '& label.Mui-focused': {
@@ -30,16 +35,31 @@ const CustomTextField = styled(TextField)({
 });
 
 const AddMovie = () => {
+  const generatePredefinedShowtimes = () => {
+    const startHour = 12; // Starting at 12 PM
+    const endHour = 24; // Ending at 12 AM
+    const intervalHours = 3; // 3-hour difference
+    const showtimes = [];
+
+    for (let hour = startHour; hour <= endHour; hour += intervalHours) {
+      const time = new Date();
+      time.setHours(hour, 0, 0); // Setting minutes and seconds to 0
+      showtimes.push({ theatre: '', datetime: time });
+    }
+
+    return showtimes;
+  };
+  const [predefinedShowtimes, setPredefinedShowtimes] = useState(generatePredefinedShowtimes());
   const [movie, setMovie] = useState({
     title: '',
     rating: '',
     genre: '',
     synopsis: '',
     cast: '',
-    theater: '',
-    releaseDate: '',
     category: '',
-    poster: null
+    poster: null,
+    theater: '',
+    showtimes: [],
   });
   const [theatres, setTheatres] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,86 +67,139 @@ const AddMovie = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const fetchTheatres = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/theatres/');
-        if (!response.ok) {
-          throw new Error('Failed to fetch theatres');
-        }
-        const data = await response.json();
-        setTheatres(data);
-      } catch (error) {
-        console.error('Error fetching theatres:', error);
-      }
-    };
-
-    fetchTheatres();
+    axios.get('http://localhost:3000/theatres/')
+      .then(response => {
+        setTheatres(response.data);
+        console.log("Theatres = ")
+        console.log(theatres);
+      })
+      .catch(error => {
+        console.error('Failed to fetch theatres:', error);
+        setError('Failed to fetch theatres');
+      });
   }, []);
-
+  // const handleAddPredefinedShowtime = (showtime) => {
+  //   setMovie(prevMovie => ({
+  //     ...prevMovie,
+  //     showtimes: [...prevMovie.showtimes, showtime],
+  //   }));
+  // };
   const handleChange = (event) => {
     const { name, value } = event.target;
+    console.log(name);
+    console.log(value);
     setMovie(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
-
   const handleFileChange = (event) => {
     setMovie(prevState => ({
       ...prevState,
-      poster: event.target.files[0]
+      poster: event.target.files[0],
     }));
+  };
+
+  const addShowtime = () => {
+    setMovie(prevMovie => ({
+      ...prevMovie,
+      showtimes: [...prevMovie.showtimes, { theatre: '', datetime: new Date() }],
+    }));
+  };
+  const handleAddPredefinedShowtime = (predefinedShowtime) => {
+    if (!movie.theater) {
+      setError('Please select a theater before adding a showtime.');
+      return;
+    }
+  
+    // Find the selected theater's full object based on the _id
+    const selectedTheatreObject = theatres.find(theatre => theatre._id === movie.theater);
+    console.log(theatres.find(theatre => theatre._id === movie.theater));
+    if (!selectedTheatreObject) {
+      setError('Selected theater does not exist.');
+      return;
+    }
+  
+    // Create a new showtime object with the correct theatre ObjectId and a unique id for the key
+    const newShowtime = {
+      theatre: selectedTheatreObject._id,
+      datetime: predefinedShowtime.datetime,
+      id: Date.now(), // unique ID for key purposes
+    };
+  
+    setMovie(prevMovie => ({
+      ...prevMovie,
+      showtimes: [...prevMovie.showtimes, newShowtime],
+    }));
+  };
+
+  const removeSelectedShowtime = (id) => {
+    setMovie(prevMovie => ({
+      ...prevMovie,
+      showtimes: prevMovie.showtimes.filter(showtime => showtime.id !== id),
+    }));
+  };
+  const removeShowtime = (index) => {
+    setMovie(prevMovie => ({
+      ...prevMovie,
+      showtimes: prevMovie.showtimes.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleShowtimeChange = (index, field, value) => {
+    const updatedShowtimes = movie.showtimes.map((showtime, i) => {
+      if (i === index) {
+        return { ...showtime, [field]: value };
+      }
+      return showtime;
+    });
+    setMovie({ ...movie, showtimes: updatedShowtimes });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setError('');
-    setSuccessMessage('');
-
+  
     const formData = new FormData();
-    Object.keys(movie).forEach(key => {
-      formData.append(key, movie[key]);
-    });
-
+    formData.append('title', movie.title);
+    formData.append('rating', movie.rating);
+    formData.append('genre', movie.genre);
+    formData.append('synopsis', movie.synopsis);
+    formData.append('cast', movie.cast);
+    formData.append('category', movie.category);
+    formData.append('showtimes', JSON.stringify(movie.showtimes)); // Serialize showtimes
+    if (movie.poster) {
+      formData.append('poster', movie.poster);
+    }
+  
     try {
-      const response = await fetch('http://localhost:3000/movies/add-movie', {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post('http://localhost:3000/movies/add-movie', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add movie');
-      }
-
-      await response.json();
       setSuccessMessage('Movie added successfully!');
-      setMovie({
-        title: '',
-        rating: '',
-        genre: '',
-        synopsis: '',
-        cast: '',
-        theater: '',
-        releaseDate: '',
-        category: '',
-        poster: null
-      }); // Reset form fields
+      // Reset form if necessary
+      console.log('Response:', response);
     } catch (error) {
-      setError(error.message);
+      console.error('Failed to add movie:', error);
+      setError('Failed to add movie');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils} >
     <Box sx={{
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      backgroundColor: '#121212'
+      backgroundColor: '#121212',
+      paddingTop: '100px',
+      paddingBottom: '100px'
     }}>
       <Card raised sx={{
         maxWidth: 900,
@@ -198,22 +271,22 @@ const AddMovie = () => {
                 <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="theater-label" style={{ color: '#b3b3b3' }}>Theater</InputLabel>
                 <Select
-                  labelId="theater-label"
-                  id="theater"
-                  name="theater"
-                  value={movie.theater}
-                  onChange={handleChange}
+                labelId="theater-label"
+                id="theater"
+                name="theater"
+                value={movie.theater || ''}
+                onChange={handleChange}
                   sx={{
                     color: 'white',
                     '& .MuiSvgIcon-root': { color: 'white' }
                   }}
                 >
-                  {theatres.map((theatre) => (
-                    <MenuItem key={theatre._id} value={theatre.name}>
-                      {theatre.name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                   {theatres.map((theatre) => (
+    <MenuItem key={theatre._id} value={theatre._id}>
+      {theatre.name}
+    </MenuItem>
+  ))}
+              </Select>
               </FormControl>
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="category-label" style={{ color: '#b3b3b3' }}>Category</InputLabel>
@@ -234,6 +307,44 @@ const AddMovie = () => {
                   <MenuItem value="recommendations">Recommendations</MenuItem>
                 </Select>
               </FormControl>
+              <Typography variant="h5" sx={{ mt: 2, color: 'white' }}>Select Predefined Showtimes</Typography>
+        {predefinedShowtimes.map((showtime, index) => (
+          <Fragment key={index}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={8}>
+                <Typography>
+                  {showtime.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="outlined" onClick={() => handleAddPredefinedShowtime(showtime)}>
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
+          </Fragment>
+        ))}
+
+        <Typography variant="h5" sx={{ mt: 2, color: 'white' }}>Selected Showtimes</Typography>
+        {movie.showtimes.map((showtime, index) => (
+          <Fragment key={showtime.id}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={8}>
+                <Typography>
+                  {showtime.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <IconButton onClick={() => removeSelectedShowtime(showtime.id)}>
+                  <RemoveCircleOutlineIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Fragment>
+        ))}
+                <Button startIcon={<AddCircleOutlineIcon />} onClick={addShowtime}>
+                  Add Showtime
+                </Button>
                 <Button type="submit" variant="contained" color="secondary" fullWidth sx={{ bgcolor: '#ff3d00' }}>
                   Add Movie
                 </Button>
@@ -267,12 +378,14 @@ const AddMovie = () => {
                 />
               )}
             </Box>
+            
           </Grid>
         </Grid>
       </Card>
       {error && <Alert severity="error">{error}</Alert>}
       {successMessage && <Alert severity="success">{successMessage}</Alert>}
     </Box>
+    </MuiPickersUtilsProvider>
   );
 };
 

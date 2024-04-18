@@ -3,7 +3,7 @@ const connectDB = require('./config/db');
 const cors = require('cors');
 const path = require('path');
 const app = express();
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // Connect to Database
 connectDB();
 
@@ -24,6 +24,21 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // Basic route for testing
 app.get('/', (req, res) => {
   res.send('API Running');
+});
+
+app.post('/create-payment-intent', async (req, res) => {
+  const { amount } = req.body;
+  try {
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount,
+          currency: 'usd',
+      });
+      res.send({
+          clientSecret: paymentIntent.client_secret,
+      });
+  } catch (error) {
+      res.status(500).send({ error: error.message });
+  }
 });
 
 // Starting the server

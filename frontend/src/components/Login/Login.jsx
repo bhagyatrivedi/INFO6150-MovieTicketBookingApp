@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, TextField, Box, Typography, Container, Grid, Link, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { setAuthToken, login } = useContext(AuthContext);
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -40,7 +45,10 @@ export default function Login() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('userType', data.type);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      login(data.user, data.token);
       setLoginSuccess(true);
+      navigate('/customer-preferences');
     } catch (error) {
       console.log(error.message);
       setError(error.message);
