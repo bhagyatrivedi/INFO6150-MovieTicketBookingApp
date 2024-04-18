@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e6c13ad2.css",
+    "main.js": "/static/js/main.c4266b1d.js",
+    "static/js/213.d73381f9.chunk.js": "/static/js/213.d73381f9.chunk.js",
+    "static/js/455.27006e4d.chunk.js": "/static/js/455.27006e4d.chunk.js",
+    "static/js/453.0601063a.chunk.js": "/static/js/453.0601063a.chunk.js",
+    "static/media/movie4.png": "/static/media/movie4.1eab7c4998cf63e95622.png",
+    "static/media/movie5.png": "/static/media/movie5.ac32bd29c4f89d9c2cd8.png",
+    "static/media/jumbotron-img.png": "/static/media/jumbotron-img.94498ba9190e6cf004a3.png",
+    "static/media/movie3.png": "/static/media/movie3.eb0521bf2c0546a01e69.png",
+    "static/media/Wood.png": "/static/media/Wood.e581ab0e289d0a19c9f8.png",
+    "static/media/Titanic.png": "/static/media/Titanic.8730cbab4abf41809fbb.png",
+    "static/media/US.png": "/static/media/US.d1830a25788d217b4a90.png",
+    "static/media/Avatar.png": "/static/media/Avatar.e602b4f37730a29567d8.png",
+    "static/media/Oppenheimer.png": "/static/media/Oppenheimer.e465a297f4db372a2150.png",
+    "static/media/Barbie.png": "/static/media/Barbie.92994c9670c67da24196.png",
+    "static/media/movie2.png": "/static/media/movie2.c89bb903de97d6690045.png",
+    "static/media/Dune.png": "/static/media/Dune.2c58e61eeec4e6aa9ce4.png",
+    "static/media/movie1.png": "/static/media/movie1.7890ac5f4999042c3c76.png",
+    "index.html": "/index.html",
+    "main.e6c13ad2.css.map": "/static/css/main.e6c13ad2.css.map",
+    "main.c4266b1d.js.map": "/static/js/main.c4266b1d.js.map",
+    "213.d73381f9.chunk.js.map": "/static/js/213.d73381f9.chunk.js.map",
+    "455.27006e4d.chunk.js.map": "/static/js/455.27006e4d.chunk.js.map",
+    "453.0601063a.chunk.js.map": "/static/js/453.0601063a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.c4266b1d.js"
+  ]
+}
