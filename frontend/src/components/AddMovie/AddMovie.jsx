@@ -5,8 +5,6 @@ import {
 import { styled } from '@mui/material/styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import axios from 'axios';
 
 const CustomTextField = styled(TextField)({
@@ -163,7 +161,6 @@ const AddMovie = () => {
 
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} >
     <Box sx={{
       display: 'flex',
       justifyContent: 'center',
@@ -357,7 +354,6 @@ const AddMovie = () => {
       {error && <Alert severity="error">{error}</Alert>}
       {successMessage && <Alert severity="success">{successMessage}</Alert>}
     </Box>
-    </MuiPickersUtilsProvider>
   );
 };
 
