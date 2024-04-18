@@ -31,10 +31,21 @@ export default function Navbar(props) {
             CineGenie
           </Typography>
           <Button color="inherit" onClick={() => navigate('/')}>Home</Button>
+          {user && user.type === 'customer' && (
+            <Button color="inherit" onClick={() => navigate('/movies')}>Movies</Button>
+          )}
           {user ? (
-            <Button color="inherit" onClick={handleLogout}>Logout</Button>
+            <>
+              <Typography variant="subtitle1" sx={{ marginRight: 2 }}>
+                Welcome, {user.fullName}
+              </Typography>
+              <Button color="inherit" onClick={handleLogout}>Logout</Button>
+            </>
           ) : (
-            <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+            <>
+              <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+              <Button color="inherit" onClick={() => navigate('/sign-up')}>Sign Up</Button>
+            </>
           )}
         </Toolbar>
       </AppBar>

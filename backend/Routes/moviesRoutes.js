@@ -74,5 +74,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/movie/:id', async (req, res) => {
+  try {
+    console.log("In API")
+    const movie = await Movie.findById(req.params.id).populate('showtimes.theatre');
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+    console.log('Movie fetched:', movie.data);
+    res.json(movie);
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 module.exports = router;

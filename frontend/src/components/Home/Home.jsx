@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Card, CardMedia, CardContent, Grid, AppBar, Toolbar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Carousel from 'react-material-ui-carousel';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+
+import { AuthContext } from '../../AuthContext';
 
 // Import images
 import m1 from '../../img/movie1.png';
@@ -23,6 +26,8 @@ import jumbotronImage from '../../img/jumbotron-img.png';
 
 
 function Home() {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const featuredMovies = [
     { image: m1, title: 'Twisters', description: 'Some description.', rating: '8.2/10 - 52.1K Votes' },
     { image: m2, title: 'Come Together', description: 'Some description.', rating: '9/10 - 40.1K Votes' },
@@ -40,6 +45,18 @@ function Home() {
     { image: m11, title: 'US', description: 'Some description.', rating: '9.7/10 - 30.1K Votes' },
     { image: m12, title: 'Wood', description: 'Some description.', rating: '9.7/10 - 30.1K Votes' }
   ];
+
+  const handleBookNowClick = () => {
+    // Check if the user is not logged in
+    if (!user) {
+      navigate('/login');
+    } else if (user.type === 'customer') {
+      navigate('/customer-preferences');
+    } else if (user.type === 'admin') {
+      // For example, redirect an admin user somewhere relevant
+      navigate('/admin-dashboard');
+    }
+  };
 
   return (
     <Box sx={{ bgcolor: 'black', color: 'white' }}>
@@ -66,7 +83,7 @@ function Home() {
         {/* Overlayed text and buttons */}
         <Box sx={{ position: 'absolute', p: 4, color: 'white' }}>
           <Typography variant="h3">Welcome to CineGenie</Typography>
-          <Button variant="contained">Book Now</Button>
+          <Button variant="contained" onClick={handleBookNowClick}>Book Now</Button>
         </Box>
       </Card>
 
@@ -123,9 +140,9 @@ function Home() {
                   {movie.rating}
                 </Typography>
               </CardContent>
-              <Button variant="contained" color="primary" sx={{ borderRadius: 0 }}>
-                Book Now
-              </Button>
+              <Button variant="contained" color="primary" onClick={handleBookNowClick}>
+          Book Now
+        </Button>
             </Card>
           </Grid>
         ))}

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const MovieCarousel = ({ category }) => {
   const [movies, setMovies] = useState([]);
+  const navigate = useNavigate(); // Use the useNavigate hook
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -19,8 +21,12 @@ const MovieCarousel = ({ category }) => {
     fetchMovies();
   }, [category]);
 
+  const handleMovieClick = (movieId) => {
+    navigate(`/movie/${movieId}`); // Navigate to MovieDetail with the movie's ID
+  };
+  
   return (
-    <Box sx={{ mt: 2}}>
+    <Box sx={{ mt: 2 }}>
       <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', color: 'white' }}>
         {category.replace('-', ' ').toUpperCase()}
       </Typography>
@@ -39,12 +45,16 @@ const MovieCarousel = ({ category }) => {
         }}
       >
         {movies.map((movie) => (
-          <Card key={movie._id} sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'transparent' }}>
+          <Card 
+            key={movie._id} 
+            sx={{ display: 'flex', justifyContent: 'center', bgcolor: 'transparent' }}
+            onClick={() => handleMovieClick(movie._id)} // Add onClick event handler
+          >
             <CardMedia
               component="img"
               image={movie.imageUrl}
               alt={movie.title}
-              sx={{ height: 450, maxWidth: '100%', objectFit: 'contain', marginBottom: 10}}
+              sx={{ height: 450, maxWidth: '100%', objectFit: 'contain', marginBottom: 10 }}
             />
             <CardContent sx={{ position: 'absolute', bottom: 0, color: 'white', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
               <Typography gutterBottom variant="h5" component="div">
