@@ -5,7 +5,7 @@ import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setAuthToken, login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

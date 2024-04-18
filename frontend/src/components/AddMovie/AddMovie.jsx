@@ -5,7 +5,7 @@ import {
 import { styled } from '@mui/material/styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import axios from 'axios';
 
@@ -17,20 +17,18 @@ const CustomTextField = styled(TextField)({
     '&.Mui-focused fieldset': {
       borderColor: '#ff9100',
     },
-  },
-  '& .MuiOutlinedInput-input': {
-    color: 'white',
-  },
-  '& .MuiInputLabel-root': {
-    color: '#b3b3b3',
-  },
-  '& .MuiOutlinedInput-root': {
+    '& input': {
+      color: 'white',
+    },
     '& fieldset': {
       borderColor: '#b3b3b3',
     },
     '&:hover fieldset': {
       borderColor: '#ffcc80',
     },
+  },
+  '& .MuiInputLabel-root': {
+    color: '#b3b3b3',
   },
 });
 
@@ -49,7 +47,7 @@ const AddMovie = () => {
 
     return showtimes;
   };
-  const [predefinedShowtimes, setPredefinedShowtimes] = useState(generatePredefinedShowtimes());
+  const [predefinedShowtimes] = useState(generatePredefinedShowtimes()); // Removed setPredefinedShowtimes
   const [movie, setMovie] = useState({
     title: '',
     rating: '',
@@ -62,7 +60,6 @@ const AddMovie = () => {
     showtimes: [],
   });
   const [theatres, setTheatres] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -77,13 +74,8 @@ const AddMovie = () => {
         console.error('Failed to fetch theatres:', error);
         setError('Failed to fetch theatres');
       });
-  }, []);
-  // const handleAddPredefinedShowtime = (showtime) => {
-  //   setMovie(prevMovie => ({
-  //     ...prevMovie,
-  //     showtimes: [...prevMovie.showtimes, showtime],
-  //   }));
-  // };
+  }, [theatres]); // Added theatres to the dependency array
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     console.log(name);
@@ -93,6 +85,7 @@ const AddMovie = () => {
       [name]: value,
     }));
   };
+
   const handleFileChange = (event) => {
     setMovie(prevState => ({
       ...prevState,
@@ -106,13 +99,13 @@ const AddMovie = () => {
       showtimes: [...prevMovie.showtimes, { theatre: '', datetime: new Date() }],
     }));
   };
+
   const handleAddPredefinedShowtime = (predefinedShowtime) => {
     if (!movie.theater) {
       setError('Please select a theater before adding a showtime.');
       return;
     }
   
-    // Find the selected theater's full object based on the _id
     const selectedTheatreObject = theatres.find(theatre => theatre._id === movie.theater);
     console.log(theatres.find(theatre => theatre._id === movie.theater));
     if (!selectedTheatreObject) {
@@ -120,11 +113,10 @@ const AddMovie = () => {
       return;
     }
   
-    // Create a new showtime object with the correct theatre ObjectId and a unique id for the key
     const newShowtime = {
       theatre: selectedTheatreObject._id,
       datetime: predefinedShowtime.datetime,
-      id: Date.now(), // unique ID for key purposes
+      id: Date.now(),
     };
   
     setMovie(prevMovie => ({
@@ -139,26 +131,9 @@ const AddMovie = () => {
       showtimes: prevMovie.showtimes.filter(showtime => showtime.id !== id),
     }));
   };
-  const removeShowtime = (index) => {
-    setMovie(prevMovie => ({
-      ...prevMovie,
-      showtimes: prevMovie.showtimes.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleShowtimeChange = (index, field, value) => {
-    const updatedShowtimes = movie.showtimes.map((showtime, i) => {
-      if (i === index) {
-        return { ...showtime, [field]: value };
-      }
-      return showtime;
-    });
-    setMovie({ ...movie, showtimes: updatedShowtimes });
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
   
     const formData = new FormData();
     formData.append('title', movie.title);
@@ -167,7 +142,7 @@ const AddMovie = () => {
     formData.append('synopsis', movie.synopsis);
     formData.append('cast', movie.cast);
     formData.append('category', movie.category);
-    formData.append('showtimes', JSON.stringify(movie.showtimes)); // Serialize showtimes
+    formData.append('showtimes', JSON.stringify(movie.showtimes));
     if (movie.poster) {
       formData.append('poster', movie.poster);
     }
@@ -179,13 +154,10 @@ const AddMovie = () => {
         },
       });
       setSuccessMessage('Movie added successfully!');
-      // Reset form if necessary
       console.log('Response:', response);
     } catch (error) {
       console.error('Failed to add movie:', error);
       setError('Failed to add movie');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

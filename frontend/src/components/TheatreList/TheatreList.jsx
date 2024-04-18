@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Divider, Pagination, Paper } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Pagination, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const TheatreList = ({ theatres }) => {

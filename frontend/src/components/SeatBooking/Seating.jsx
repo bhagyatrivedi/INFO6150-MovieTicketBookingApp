@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Typography, Button, Grid, Paper, styled, useMediaQuery, Dialog, DialogActions, DialogContent, DialogContentText, ArrowDownwardIcon } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { useLocation, useNavigate  } from 'react-router-dom'; 
+import { Box, Typography, Button, Grid, Paper, Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom'; 
+import { styled } from '@mui/system'; // Import the styled utility
 
-const SeatButton = styled(Button)(({ theme, booked, selected }) => ({
+const SeatButton = styled(Button)(({ booked, selected }) => ({
   minWidth: '36px',
   height: '36px',
-  margin: theme.spacing(2),
+  margin: '8px',
   backgroundColor: booked ? 'grey' : selected ? 'blue' : 'green',
   '&:hover': {
     backgroundColor: selected ? 'darkblue' : 'lightgreen',
@@ -16,25 +16,6 @@ const SeatButton = styled(Button)(({ theme, booked, selected }) => ({
     color: 'black',
   },
 }));
-
-const SmallSeatButton = styled(SeatButton)({
-  minWidth: '18px',
-  height: '18px',
-  padding: 0,
-  margin: '2px',
-});
-
-const SideSeat = ({ number, booked, selected, onSelect }) => (
-  <SmallSeatButton
-    variant="contained"
-    booked={booked}
-    selected={selected}
-    onClick={onSelect}
-    disabled={booked}
-  >
-    {number}
-  </SmallSeatButton>
-);
 
 const Seat = ({ number, booked, selected, onSelect }) => (
   <SeatButton
@@ -65,16 +46,14 @@ const Seating = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // Using destructuring directly for convenience
   const [selectedSeats, setSelectedSeats] = useState({});
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [sections, setSections] = useState({
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogContent, setDialogContent] = useState('');
+
+  const [sections] = useState({
     premium: createInitialSeats(3, 10),
     executive: createInitialSeats(2, 10),
     normal: createInitialSeats(5, 10),
   });
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogContent, setDialogContent] = useState('');
 
   // Retrieve theater and movieTitle from the navigation state
   const { theater = 'Unknown Theater', movieTitle = 'Unknown Movie', showtime } = state || {};
@@ -146,8 +125,8 @@ const Seating = () => {
         Theatre: {theater}
       </Typography>
       <Typography variant="h6" gutterBottom>
-  Showtime: {new Date(showtime).toLocaleString()}
-</Typography>
+        Showtime: {new Date(showtime).toLocaleString()}
+      </Typography>
       {Object.entries(sections).map(([category, rows]) => (
         <Box key={category} sx={{ mt: 2 }}>
           <Typography variant="subtitle1" gutterBottom textAlign="center">
@@ -166,8 +145,8 @@ const Seating = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={() => handleCloseDialog(true)} autoFocus>
-        Confirm
-      </Button>
+            Confirm
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>

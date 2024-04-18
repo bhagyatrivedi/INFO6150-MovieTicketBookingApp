@@ -12,7 +12,6 @@ const AddTheatre = () => {
     zip: ''
   };
   const [theatre, setTheatre] = useState(initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [pincodeError, setPincodeError] = useState(false);
@@ -36,7 +35,6 @@ const AddTheatre = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
     setError('');
     setSuccessMessage('');
 
@@ -58,8 +56,6 @@ const AddTheatre = () => {
       setTheatre(initialState); // Reset the form fields after successful submission
     } catch (error) {
       setError(error.message);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

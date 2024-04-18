@@ -10,7 +10,6 @@ import PaymentForm from './components/PaymentForm/PaymentForm';
 import Venue from './components/Venue/Venue';
 import BookingHistory from './components/BookingHistory/BookingHistory';
 import AddTheatre from './components/AddTheatre/AddTheatre';
-import TheatreList from './components/TheatreList/TheatreList';
 import PreferencesForm from './components/PreferencesForm/PreferencesForm';
 import MovieDetail from './components/MovieDetail/MovieDetail';
 import SignupPage from './components/SignUp/SignUp';
