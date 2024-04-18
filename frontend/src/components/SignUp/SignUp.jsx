@@ -22,8 +22,7 @@ const SignupPage = () => {
     setSuccessMessage('');
 
     try {
-      const url = 'http://localhost:3000'; // Replace with your backend URL
-      const response = await fetch(`${url}/user/create`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/user/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

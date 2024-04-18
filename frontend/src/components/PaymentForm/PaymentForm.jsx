@@ -5,8 +5,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import TicketPDFGenerator from './TicketPDFGenerator'; // Adjust the import path as necessary
 
-const stripePromise = loadStripe('pk_test_51P6lsIJrAU2yeKrxYoghGQ1AY2kvd9nNQWAXJvS9ksAJWadrU1YkfLHkqpIRU6fGXZe7jL5XbAAdBPuiVsIH5hHH00HITDr0B2');
-
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_KEY);
 // Mock function to simulate payment process. Replace with your server-side function
 const mockPaymentProcess = async (paymentMethodId) => {
     console.log('Processing payment with payment method:', paymentMethodId);

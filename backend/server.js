@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+require('dotenv').config();
 // Connect to Database
 connectDB();
 

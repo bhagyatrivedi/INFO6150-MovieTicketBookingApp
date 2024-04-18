@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
+require('dotenv').config();
 
 // Enhanced middleware with optional admin check
 function jwtAuth(requireAdmin = false) {
@@ -10,7 +11,7 @@ function jwtAuth(requireAdmin = false) {
         }
 
         try {
-            const decoded = jwt.verify(token, config.get('jwtSecret'));
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decoded.user;
             if (requireAdmin && req.user.type !== 'admin') {
                 return res.status(403).json({ msg: 'Access denied: Admins only' });

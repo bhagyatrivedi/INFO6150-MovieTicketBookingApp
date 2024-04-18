@@ -173,7 +173,7 @@ const AddMovie = () => {
     }
   
     try {
-      const response = await axios.post('http://localhost:3000/movies/add-movie', formData, {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/movies/add-movie`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

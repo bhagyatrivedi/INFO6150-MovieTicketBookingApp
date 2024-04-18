@@ -9,7 +9,7 @@ const MovieCarousel = ({ category }) => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/movies/${category}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movies/${category}`);
         setMovies(response.data);
       } catch (error) {
         console.error('Failed to fetch movies:', error);
